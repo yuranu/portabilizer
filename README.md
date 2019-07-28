@@ -43,15 +43,15 @@ That's it.
 
 Lets say you wish have an executable exe_main that lauches 2 other executables exe_main and exe_B. You can pack all of them into one archive, using:
 
-    portzr.sh -b exe_main -b exe_A -b exe_B
+    portzr.sh -b exe_main -b exe_A -b exe_B -o arch.port
     
 Now assume all your exes are also using a database data.sqlite3, that you want to pack alongside with them. So you can say:
 
-    portzr.sh -b exe_A -b exe_B -b exe_main -f data.sqlite3
+    portzr.sh -b exe_main -b exe_A -b exe_B -f data.sqlite3 -o arch.port
     
 Now maybe you do not want to invoke exe_main directly. You have a bash script, exe.sh, that does it. So add this script to the archive, and specify it as an entry point:
 
-    portzr.sh -b exe_A -b exe_B -b exe_main -f data.sqlite3 -f exe.sh -e exe.sh
+    portzr.sh -b exe_main -b exe_A -b exe_B -f data.sqlite3 -f exe.sh -e exe.sh -o arch.port
     
 During the execution of exe_main, exe.sh, or any other exe, all the packed files are accessible from a single directory. For example, to access exe_main from within exe.sh, use:
 
