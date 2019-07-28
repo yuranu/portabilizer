@@ -31,13 +31,31 @@ Instead of messing with dependecy hell, just pack all the dependencies in one ex
 
 To create a portable archive:
 
-    portzr.sh my_binary_executable my_portable_archive
+    portzr.sh -b my_binary_executable -o my_portable_archive
 
 Then, just run it, anywhere:
     
     ./my_portable_archive
     
 That's it.
+
+## A little more complex usage
+
+Lets say you wish have an executable exe_main that lauches 2 other executables exe_main and exe_B. You can pack all of them into one archive, using:
+
+    portzr.sh -b exe_main -b exe_A -b exe_B
+    
+Now assume all your exes are also using a database data.sqlite3, that you want to pack alongside with them. So you can say:
+
+    portzr.sh -b exe_A -b exe_B -b exe_main -f data.sqlite3
+    
+Now maybe you do not want to invoke exe_main directly. You have a bash script, exe.sh, that does it. So add this script to the archive, and specify it as an entry point:
+
+    portzr.sh -b exe_A -b exe_B -b exe_main -f data.sqlite3 -f exe.sh -e exe.sh
+    
+During the execution of exe_main, exe.sh, or any other exe, all the packed files are accessible from a single directory. For example, to access exe_main from within exe.sh, use:
+
+    $(dirname $0)/exe_main
 
 ## How it works
 
