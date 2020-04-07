@@ -110,7 +110,7 @@ function prepare_exe_wrapper() {
 	cat >"$WRAPPER_NAME" <<__SCRIPT__
 #!/bin/bash
 WRKDIR=\$(dirname \$0)
-LD_LIBRARY_PATH="\$WRKDIR" \$WRKDIR/$(basename $2) \$WRKDIR/$(gen_fake_exe_name $1)
+LD_LIBRARY_PATH="\$WRKDIR" \$WRKDIR/$(basename $2) \$WRKDIR/$(gen_fake_exe_name $1) "\$@"
 __SCRIPT__
 	chmod 755 "$WRAPPER_NAME"
 	echo "$WRAPPER_NAME"
@@ -172,14 +172,14 @@ while [[ $# -gt 0 ]]; do
 
 	case $key in
 	-b | --binary)
-		array_contains BIN_TOCOLLECT "$2" && die "File specified twice ($2)"
-		array_contains FILES_TOCOLLECT "$2" && die "File specified twice ($2)"
-		BIN_TOCOLLECT+=("$(realpath $2)")
+		array_contains BIN_TOCOLLECT "${2}" && die "File specified twice ($2)"
+		array_contains FILES_TOCOLLECT "${2}" && die "File specified twice ($2)"
+		BIN_TOCOLLECT+=("$(realpath ${2})")
 		if [ ! "$OUT_NAME" ]; then
-			OUT_NAME="$2.port"
+			OUT_NAME="$(basename ${2}).port"
 		fi
 		if [ ! "$ENTRYPOINT" ]; then
-			ENTRYPOINT=$(basename "$2")
+			ENTRYPOINT="$(basename ${2})"
 		fi
 		shift
 		shift
@@ -269,7 +269,7 @@ DATA_MARKER=$(awk '/^__DATA_MARKER__/ {print NR + 1; exit 0; }' $0)
 tail -n+$DATA_MARKER $0 | tar x -C $WRKDIR
 
 # Launch the entry point (to be replaced with the actual entry point name).
-$WRKDIR/__ENTRYPOINT__
+$WRKDIR/__ENTRYPOINT__ "$@"
 
 # Exit with correct status
 exit $?
